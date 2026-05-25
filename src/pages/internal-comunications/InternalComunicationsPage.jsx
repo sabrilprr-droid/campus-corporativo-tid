@@ -1,5 +1,85 @@
 import React from 'react';
 import { useLoaderData, useRevalidator, useRouteLoaderData } from 'react-router-dom';
+import { Spinner } from '../../components/components.jsx';
+import { COLORS } from '../../components/theme.js';
+
+// Rutas e importaciones alineadas exactamente con tu estructura de archivos
+import SeccionAnunciosListados from './Subcomponents/Seccionanuncioslistados.jsx';
+import SeccionForos from './Subcomponents/seccionforos.jsx';
+import SeccionMensajesDirectos from './Subcomponents/Seccionmensajesdirectos.jsx';
+
+export default function InternalComunicationsPage() {
+  const revalidator = useRevalidator();
+  const { session } = useRouteLoaderData('root');
+  const { anuncios } = useLoaderData();
+
+  // Estado para controlar la pestaña activa: 'anuncios' | 'foros' | 'mensajes'
+  const [activeTab, setActiveTab] = React.useState('anuncios');
+
+  if (revalidator.state !== 'idle') return <Spinner text="Cargando..." />;
+
+  return (
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px' }}>
+      {/* Encabezado */}
+      <div className="page-header" style={{ marginBottom: 20 }}>
+        <h2>Comunicaciones internas</h2>
+      </div>
+
+      <div style={{ display: 'flex', gap: 10, marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 12 }}>
+        <button 
+          className="btn"
+          onClick={() => setActiveTab('anuncios')}
+          style={tabButtonStyle(activeTab === 'anuncios')}
+        >
+          Anuncios
+        </button>
+        <button 
+          className="btn"
+          onClick={() => setActiveTab('foros')}
+          style={tabButtonStyle(activeTab === 'foros')}
+        >
+          Foros de Discusión
+        </button>
+        <button 
+          className="btn"
+          onClick={() => setActiveTab('mensajes')}
+          style={tabButtonStyle(activeTab === 'mensajes')}
+        >
+          Mensajes Directos
+        </button>
+      </div>
+
+      <div className="tab-content" style={{ animation: 'fadeIn 0.2s ease' }}>
+        {activeTab === 'anuncios' && (
+          <SeccionAnunciosListados anuncios={anuncios} session={session} revalidator={revalidator} />
+        )}
+        
+        {activeTab === 'foros' && (
+          <SeccionForos session={session} />
+        )}
+        
+        {activeTab === 'mensajes' && (
+          <SeccionMensajesDirectos session={session} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+const tabButtonStyle = (isActive) => ({
+  borderRadius: '20px',
+  padding: '6px 18px',
+  fontSize: '14px',
+  fontWeight: '600',
+  backgroundColor: isActive ? '#2D6DF6' : '#00AEC7', // Verde si está activo, gris oscuro si no
+  color: '#ffffff',
+  border: 'none',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease'
+});
+
+/*import React from 'react';
+import { useLoaderData, useRevalidator, useRouteLoaderData } from 'react-router-dom';
 import { EmptyState, FormField, Modal, Spinner } from '../../components/components.jsx';
 import { COLORS } from '../../components/theme.js';
 import { confirm, toast } from '../../helpers/alerts.js';
@@ -148,4 +228,4 @@ export default function InternalComunicationsPage() {
     </div>
   );
 }
-
+*/
