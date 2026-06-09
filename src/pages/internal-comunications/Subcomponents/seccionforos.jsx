@@ -1,18 +1,42 @@
 import React from 'react';
 import { MessageSquare, ArrowUp, Plus, ArrowLeft, Send } from 'lucide-react';
+import { FormField, Modal } from '../../../components/components.jsx';
 import { COLORS } from '../../../components/theme.js';
 
-export default function SeccionForos() {
+const initialDebateForm = {
+  titulo: '',
+  categoria: '',
+  descripcion: '',
+};
+
+const FOROS_STORAGE_KEY = 'tid_foros_discusion';
+
+export default function SeccionForos({ session }) {
   const [foroSeleccionado, setForoSeleccionado] = React.useState(null);
   const [nuevoComentario, setNuevoComentario] = React.useState('');
+  const [crearDebateOpen, setCrearDebateOpen] = React.useState(false);
+  const [debateForm, setDebateForm] = React.useState(initialDebateForm);
+  const [formError, setFormError] = React.useState('');
   
-  const [hilos, setHilos] = React.useState([
+  const [hilos, setHilos] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem(FOROS_STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {
+      return null;
+    }
+    return [
     { id: 1, titulo: '¿Cómo estructurar rutas complejas en React Router v6?', autor: 'Juan Docente', categoria: 'React', respuestasCount: 2, votos: 24, comentarios: [
       { id: 1, usuario: 'Ana María Silva', texto: 'Yo utilizo el hook useRoutes, se me hace más ordenado.', fecha: 'Hace 2 horas' },
       { id: 2, usuario: 'Pedro Pérez', texto: '¡Totalmente! Además ayuda mucho a separar las rutas de autenticación.', fecha: 'Hace 1 hora' }
     ]},
     { id: 2, titulo: 'Mejores prácticas para asegurar microservicios en Java Spring Boot', autor: 'Camilo Andres', categoria: 'Seguridad', respuestasCount: 0, votos: 18, comentarios: [] }
-  ]);
+    ];
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem(FOROS_STORAGE_KEY, JSON.stringify(hilos));
+  }, [hilos]);
 
   const controlarVoto = (e, id) => {
     e.stopPropagation();
@@ -44,6 +68,46 @@ export default function SeccionForos() {
 
     setHilos(hilosActualizados);
     setNuevoComentario('');
+  };
+
+  const abrirCrearDebate = () => {
+    setDebateForm(initialDebateForm);
+    setFormError('');
+    setCrearDebateOpen(true);
+  };
+
+  const crearDebate = () => {
+    const titulo = debateForm.titulo.trim();
+    const categoria = debateForm.categoria.trim();
+    const descripcion = debateForm.descripcion.trim();
+
+    if (!titulo || !categoria || !descripcion) {
+      setFormError('Completa titulo, categoria y descripcion para crear el debate.');
+      return;
+    }
+
+    const comentarioInicial = {
+      id: Date.now(),
+      usuario: session?.nombre || 'Tu (Mi Perfil)',
+      texto: descripcion,
+      fecha: 'Ahora mismo'
+    };
+
+    const nuevoHilo = {
+      id: Date.now(),
+      titulo,
+      autor: session?.nombre || session?.rol || 'Usuario',
+      categoria,
+      respuestasCount: 1,
+      votos: 0,
+      comentarios: [comentarioInicial]
+    };
+
+    setHilos((prev) => [nuevoHilo, ...prev]);
+    setForoSeleccionado(nuevoHilo);
+    setCrearDebateOpen(false);
+    setDebateForm(initialDebateForm);
+    setFormError('');
   };
 
   // VISTA DETALLE DEL FORO (HILO ABIERTO)
@@ -103,7 +167,7 @@ export default function SeccionForos() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Foros de la Comunidad</h3>
-        <button className="btn btn-primary btn-sm" style={{ borderRadius: '20px' }}>
+        <button className="btn btn-primary btn-sm" onClick={abrirCrearDebate} style={{ borderRadius: '20px' }}>
           <Plus size={14} /> Crear Debate
         </button>
       </div>
@@ -142,6 +206,52 @@ export default function SeccionForos() {
           </div>
         ))}
       </div>
+
+      <Modal
+        open={crearDebateOpen}
+        onClose={() => setCrearDebateOpen(false)}
+        title="Crear debate"
+        footer={
+          <>
+            <button className="btn btn-secondary" onClick={() => setCrearDebateOpen(false)}>
+              Cancelar
+            </button>
+            <button className="btn btn-primary" onClick={crearDebate}>
+              Publicar debate
+            </button>
+          </>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <FormField label="Titulo">
+            <input
+              className="form-input"
+              value={debateForm.titulo}
+              onChange={(e) => setDebateForm((prev) => ({ ...prev, titulo: e.target.value }))}
+              placeholder="Tema principal de la discusion"
+            />
+          </FormField>
+          <FormField label="Categoria">
+            <input
+              className="form-input"
+              value={debateForm.categoria}
+              onChange={(e) => setDebateForm((prev) => ({ ...prev, categoria: e.target.value }))}
+              placeholder="React, Seguridad, Backend..."
+            />
+          </FormField>
+          <FormField label="Descripcion">
+            <textarea
+              className="form-input"
+              rows={5}
+              value={debateForm.descripcion}
+              onChange={(e) => setDebateForm((prev) => ({ ...prev, descripcion: e.target.value }))}
+              placeholder="Escribe el primer aporte del debate"
+              style={{ resize: 'vertical' }}
+            />
+          </FormField>
+          {formError && <span style={{ color: COLORS.danger, fontSize: 12 }}>{formError}</span>}
+        </div>
+      </Modal>
     </div>
   );
 }

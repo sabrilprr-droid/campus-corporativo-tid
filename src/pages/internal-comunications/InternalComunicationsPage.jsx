@@ -7,6 +7,7 @@ import { COLORS } from '../../components/theme.js';
 import SeccionAnunciosListados from './Subcomponents/Seccionanuncioslistados.jsx';
 import SeccionForos from './Subcomponents/seccionforos.jsx';
 import SeccionMensajesDirectos from './Subcomponents/Seccionmensajesdirectos.jsx';
+import { setComunicacionesUnread } from './Subcomponents/notificacionComunicacionesState.js';
 
 export default function InternalComunicationsPage() {
   const revalidator = useRevalidator();
@@ -16,10 +17,15 @@ export default function InternalComunicationsPage() {
   // Estado para controlar la pestaña activa: 'anuncios' | 'foros' | 'mensajes'
   const [activeTab, setActiveTab] = React.useState('anuncios');
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === 'mensajes') setComunicacionesUnread(false);
+  };
+
   if (revalidator.state !== 'idle') return <Spinner text="Cargando..." />;
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px' }}>
+    <div style={{ maxWidth: '1280px', width: '100%', margin: '0 auto', padding: '10px' }}>
       {/* Encabezado */}
       <div className="page-header" style={{ marginBottom: 20 }}>
         <h2>Comunicaciones internas</h2>
@@ -28,21 +34,21 @@ export default function InternalComunicationsPage() {
       <div style={{ display: 'flex', gap: 10, marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 12 }}>
         <button 
           className="btn"
-          onClick={() => setActiveTab('anuncios')}
+          onClick={() => handleTabChange('anuncios')}
           style={tabButtonStyle(activeTab === 'anuncios')}
         >
           Anuncios
         </button>
         <button 
           className="btn"
-          onClick={() => setActiveTab('foros')}
+          onClick={() => handleTabChange('foros')}
           style={tabButtonStyle(activeTab === 'foros')}
         >
           Foros de Discusión
         </button>
         <button 
           className="btn"
-          onClick={() => setActiveTab('mensajes')}
+          onClick={() => handleTabChange('mensajes')}
           style={tabButtonStyle(activeTab === 'mensajes')}
         >
           Mensajes Directos

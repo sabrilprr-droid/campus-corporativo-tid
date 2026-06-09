@@ -51,7 +51,7 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
       setOpen(false);
       setForm({ titulo: '', contenido: '', prioridad: 'Media', enlaceInfo: '' });
       revalidator.revalidate();
-    } catch (err) {
+    } catch {
       toast.error('Error al crear anuncio');
     } finally { 
       setSaving(false); 

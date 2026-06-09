@@ -2,6 +2,7 @@ import { NavLink, Outlet, useLoaderData, useNavigate } from 'react-router-dom';
 import { COLORS } from '../theme.js';
 import { tidApi } from '../../services/tid.js';
 import { BookOpen, LayoutDashboard, ClipboardList, CheckSquare, Megaphone, User, LogOut, GraduationCap } from 'lucide-react';
+import NotificacionComunicaciones from '../../pages/internal-comunications/Subcomponents/NotificacionComunicaciones.jsx';
 
 export default function RootLayout() {
   const { session } = useLoaderData();
@@ -52,7 +53,7 @@ export default function RootLayout() {
             <CheckSquare size={16} /> Asistencia
           </NavLink>
           <NavLink to="/internal-comunications" style={linkStyle}>
-            <Megaphone size={16} /> Comunicaciones
+            <Megaphone size={16} /> Comunicaciones <NotificacionComunicaciones />
           </NavLink>
           <NavLink to="/contributor-profile" style={linkStyle}>
             <User size={16} /> Perfil
