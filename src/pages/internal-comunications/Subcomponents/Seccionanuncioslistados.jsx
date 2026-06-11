@@ -9,6 +9,7 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
   const [open, setOpen] = React.useState(false);
   const [openDetail, setOpenDetail] = React.useState(false);
   const [selectedAnuncio, setSelectedAnuncio] = React.useState(null);
+  const canCreateAnnouncement = session?.rol === 'Admin' || session?.rol === 'Instructor';
   
   const [form, setForm] = React.useState({ 
     titulo: '', 
@@ -18,17 +19,10 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
   });
   const [saving, setSaving] = React.useState(false);
   
-  const [leidos, setLeidos] = React.useState(() => {
-    const saved = localStorage.getItem(`anuncios_leidos_${session?.id || 'default'}`);
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  React.useEffect(() => {
-    localStorage.setItem(`anuncios_leidos_${session?.id || 'default'}`, JSON.stringify(leidos));
-  }, [leidos, session]);
-
-  const marcarLeido = (id) => { 
-    if (!leidos.includes(id)) setLeidos([...leidos, id]); 
+  const marcarLeido = async (id) => {
+    if (!session?.id) return;
+    await tidApi.markAnuncioRead(id, session.id);
+    revalidator.revalidate();
   };
 
   const verDetalleAnuncio = (e, a) => {
@@ -70,7 +64,6 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
     if (!ok) return;
     await tidApi.deleteAnuncio(a.id);
     toast.success('Anuncio eliminado');
-    setLeidos((prev) => prev.filter((id) => id !== a.id));
     revalidator.revalidate();
   };
 
@@ -78,7 +71,7 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, alignItems: 'center' }}>
         <span style={{ color: COLORS.textMuted, fontSize: '14px' }}>Últimos anuncios publicados</span>
-        {session?.rol === 'Admin' && (
+        {canCreateAnnouncement && (
           <button className="btn btn-primary btn-sm" onClick={() => setOpen(true)} style={{ borderRadius: '20px' }}>
             <Plus size={14} /> Nuevo Anuncio
           </button>
@@ -90,7 +83,7 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {anuncios.map((a) => {
-            const estaLeido = leidos.includes(a.id);
+            const estaLeido = a.leido || a.read;
             return (
               <div 
                 key={a.id} 

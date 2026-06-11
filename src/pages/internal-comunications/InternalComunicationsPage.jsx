@@ -12,7 +12,7 @@ import { setComunicacionesUnread } from './Subcomponents/notificacionComunicacio
 export default function InternalComunicationsPage() {
   const revalidator = useRevalidator();
   const { session } = useRouteLoaderData('root');
-  const { anuncios } = useLoaderData();
+  const { anuncios, foros, contactos } = useLoaderData();
 
   // Estado para controlar la pestaña activa: 'anuncios' | 'foros' | 'mensajes'
   const [activeTab, setActiveTab] = React.useState('anuncios');
@@ -61,11 +61,11 @@ export default function InternalComunicationsPage() {
         )}
         
         {activeTab === 'foros' && (
-          <SeccionForos session={session} />
+          <SeccionForos session={session} foros={foros} revalidator={revalidator} />
         )}
         
         {activeTab === 'mensajes' && (
-          <SeccionMensajesDirectos session={session} />
+          <SeccionMensajesDirectos session={session} contactos={contactos} />
         )}
       </div>
     </div>
