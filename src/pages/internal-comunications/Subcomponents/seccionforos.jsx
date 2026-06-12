@@ -5,6 +5,7 @@ import { COLORS } from '../../../components/theme.js';
 import { toast } from '../../../helpers/alerts.js';
 import { tidApi } from '../../../services/tid.js';
 
+
 const initialDebateForm = {
   titulo: '',
   categoria: '',
@@ -103,17 +104,17 @@ export default function SeccionForos({ session, foros = [], revalidator }) {
           <small style={{ color: '#94a3b8' }}>Iniciado por {foroSeleccionado.autor}</small>
         </div>
 
-        <h4 style={{ fontSize: 14, color: '#f8fafc', marginBottom: 12 }}>Respuestas de la Comunidad ({foroSeleccionado.comentarios.length})</h4>
+        <h4 style={{ fontSize: 14, color: '#2f2f2f', marginBottom: 12 }}>Respuestas de la Comunidad ({foroSeleccionado.comentarios.length})</h4>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
           {foroSeleccionado.comentarios.length === 0 ? (
             <div style={{ color: '#6b7280', fontSize: 13, padding: 10 }}>Aun no hay comentarios. Se el primero en aportar.</div>
           ) : (
             foroSeleccionado.comentarios.map((c) => (
-              <div key={c.id} style={{ backgroundColor: '#1e293b', padding: 12, borderRadius: 8, borderLeft: '3px solid #475569' }}>
+              <div key={c.id} style={{ backgroundColor: '#393f3fe6', padding: 12, borderRadius: 8, borderLeft: '3px solid #33a3ad' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, gap: 12 }}>
-                  <strong style={{ fontSize: 12, color: '#10b981' }}>{c.usuario}</strong>
-                  <small style={{ fontSize: 11, color: '#6b7280' }}>{c.fecha}</small>
+                  <strong style={{ fontSize: 12, color: '#ffffff' }}>{c.usuario}</strong>
+                  <small style={{ fontSize: 11, color: '#cdcdcd' }}>{c.fecha}</small>
                 </div>
                 <p style={{ margin: 0, fontSize: 13, color: '#cbd5e1' }}>{c.texto}</p>
               </div>
@@ -129,7 +130,7 @@ export default function SeccionForos({ session, foros = [], revalidator }) {
             value={nuevoComentario}
             onChange={(e) => setNuevoComentario(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && agregarComentario()}
-            style={{ flex: 1, backgroundColor: '#1f2937', color: '#fff' }}
+            style={{ flex: 1, backgroundColor: '#e5e5e5', color: '#fff' }}
           />
           <button className="btn btn-primary" onClick={agregarComentario} disabled={saving} style={{ padding: '8px 16px' }}>
             <Send size={16} />
@@ -156,8 +157,8 @@ export default function SeccionForos({ session, foros = [], revalidator }) {
             onClick={() => setForoSeleccionado(hilo)}
             style={{ display: 'flex', padding: 12, gap: 14, alignItems: 'center', cursor: 'pointer', transition: 'transform 0.1s ease' }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#1e293b', padding: '6px 10px', borderRadius: 8 }}>
-              <ArrowUp size={16} color="#10b981" style={{ cursor: 'pointer' }} onClick={(e) => controlarVoto(e, hilo.id)} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#2D6DF6', padding: '6px 10px', borderRadius: 8 }}>
+              <ArrowUp size={16} color="#565656" style={{ cursor: 'pointer' }} onClick={(e) => controlarVoto(e, hilo.id)} />
               <span style={{ fontSize: 13, fontWeight: 'bold', color: '#fff' }}>{hilo.votos}</span>
             </div>
 
@@ -167,7 +168,7 @@ export default function SeccionForos({ session, foros = [], revalidator }) {
               <small style={{ color: '#94a3b8' }}>Iniciado por {hilo.autor}</small>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', fontSize: 13 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#373737', fontSize: 13 }}>
               <MessageSquare size={16} />
               <span>{hilo.respuestasCount}</span>
             </div>

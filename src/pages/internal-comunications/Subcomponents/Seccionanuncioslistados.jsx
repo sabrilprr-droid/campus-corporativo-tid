@@ -15,21 +15,31 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
     titulo: '', 
     contenido: '', 
     prioridad: 'Media',
-    enlaceInfo: '' // Nuevo campo para el hipervínculo
+    enlaceInfo: '' 
   });
   const [saving, setSaving] = React.useState(false);
   
   const marcarLeido = async (id) => {
     if (!session?.id) return;
-    await tidApi.markAnuncioRead(id, session.id);
-    revalidator.revalidate();
+    try {
+      await tidApi.markAnuncioRead(id, session.id);
+      revalidator.revalidate();
+    } catch (error) {
+      console.error("Error al marcar como leído:", error);
+    }
   };
 
+  // CORREGIDO: Separamos la apertura del modal de la revalidación inmediata
   const verDetalleAnuncio = (e, a) => {
-    e.stopPropagation(); // Evita conflictos con el click de la tarjeta
-    marcarLeido(a.id);
+    e.stopPropagation(); // Evita el click del card padre
     setSelectedAnuncio(a);
     setOpenDetail(true);
+    
+    // Si el anuncio no está leído, lo marcamos en segundo plano sin bloquear el modal
+    const estaLeido = a.leido || a.read;
+    if (!estaLeido) {
+      marcarLeido(a.id);
+    }
   };
 
   const handleCreate = async () => {
@@ -88,9 +98,9 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
               <div 
                 key={a.id} 
                 className="card" 
-                onClick={() => marcarLeido(a.id)} 
+                onClick={() => !estaLeido && marcarLeido(a.id)} 
                 style={{ 
-                  borderLeft: estaLeido ? '4px solid #94a3b8' : '4px solid #10b981', 
+                  borderLeft: estaLeido ? '4px solid #94a3b8' : '4px solid #2D6DF6', 
                   cursor: 'pointer', 
                   opacity: estaLeido ? 0.85 : 1,
                   transition: 'all 0.2s ease',
@@ -100,7 +110,7 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                   <div>
                     <h3 style={{ fontWeight: 800, fontSize: 15, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
-                      {a.titulo} {estaLeido && <CheckCheck size={16} color="#10b981" />}
+                      {a.titulo} {estaLeido && <CheckCheck size={16} color="#2D6DF6" />}
                     </h3>
                     <div style={{ marginTop: 6, fontSize: 12, color: COLORS.textMuted, display: 'flex', gap: 10 }}>
                       <span>{a.fecha}</span>
@@ -139,7 +149,7 @@ export default function SeccionAnunciosListados({ anuncios, session, revalidator
               {['Baja', 'Media', 'Alta'].map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
           </FormField>
-          <FormField label="Enlace de más información (Opcional URL)"><input className="form-input" placeholder="https://platzi.com/cursos/..." value={form.enlaceInfo} onChange={(e) => setForm((p) => ({ ...p, enlaceInfo: e.target.value }))} /></FormField>
+          <FormField label="Enlace de más información (Opcional URL)"><input className="form-input" placeholder="https://..." value={form.enlaceInfo} onChange={(e) => setForm((p) => ({ ...p, enlaceInfo: e.target.value }))} /></FormField>
           <FormField label="Contenido"><textarea className="form-input" rows={4} value={form.contenido} onChange={(e) => setForm((p) => ({ ...p, contenido: e.target.value }))} style={{ resize: 'vertical' }} /></FormField>
         </div>
       </Modal>
