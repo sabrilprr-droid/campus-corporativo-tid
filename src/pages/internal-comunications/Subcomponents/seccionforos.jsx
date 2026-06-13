@@ -100,8 +100,8 @@ export default function SeccionForos({ session, foros = [], revalidator }) {
 
         <div className="card" style={{ padding: 16, marginBottom: 20 }}>
           <span className="badge badge-gray" style={{ fontSize: 10 }}>{foroSeleccionado.categoria}</span>
-          <h3 style={{ margin: '8px 0', fontSize: 18, color: '#f8fafc' }}>{foroSeleccionado.titulo}</h3>
-          <small style={{ color: '#94a3b8' }}>Iniciado por {foroSeleccionado.autor}</small>
+          <h3 style={{ margin: '8px 0', fontSize: 18, color: '#272829' }}>{foroSeleccionado.titulo}</h3>
+          <small style={{ color: '#393b3c' }}>Iniciado por {foroSeleccionado.autor}</small>
         </div>
 
         <h4 style={{ fontSize: 14, color: '#2f2f2f', marginBottom: 12 }}>Respuestas de la Comunidad ({foroSeleccionado.comentarios.length})</h4>
@@ -130,7 +130,7 @@ export default function SeccionForos({ session, foros = [], revalidator }) {
             value={nuevoComentario}
             onChange={(e) => setNuevoComentario(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && agregarComentario()}
-            style={{ flex: 1, backgroundColor: '#e5e5e5', color: '#fff' }}
+            style={{ flex: 1, backgroundColor: '#e5e5e5', color: '#282424' }}
           />
           <button className="btn btn-primary" onClick={agregarComentario} disabled={saving} style={{ padding: '8px 16px' }}>
             <Send size={16} />
@@ -164,8 +164,8 @@ export default function SeccionForos({ session, foros = [], revalidator }) {
 
             <div style={{ flex: 1 }}>
               <span className="badge badge-gray" style={{ fontSize: 10 }}>{hilo.categoria}</span>
-              <h4 style={{ margin: '4px 0', fontSize: 15, color: '#f8fafc', fontWeight: 700 }}>{hilo.titulo}</h4>
-              <small style={{ color: '#94a3b8' }}>Iniciado por {hilo.autor}</small>
+              <h4 style={{ margin: '4px 0', fontSize: 15, color: '#212222', fontWeight: 700 }}>{hilo.titulo}</h4>
+              <small style={{ color: '#2c2d2f' }}>Iniciado por {hilo.autor}</small>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#373737', fontSize: 13 }}>
